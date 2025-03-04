@@ -7,9 +7,10 @@ export default function App() {
   const [isGameOn, setIsGameOn] = useState(false);
   const [selectedEmojis, setSelectedEmojis] = useState([]);
   const [flippedCards, setFlippedCards] = useState([]);
+  const [matchedCards, setMatchedCards] = useState([]);
 
   function startGame() {
-    const selectedArray = emojiArrays.smily; // You can change this to any array you want
+    const selectedArray = emojiArrays.smily;
     const shuffledEmojis = shuffleArray(selectedArray).slice(0, 10);
     setSelectedEmojis(
       [...shuffledEmojis, ...shuffledEmojis].sort(() => Math.random() - 0.5)
@@ -19,21 +20,33 @@ export default function App() {
   }
 
   function turnCard(index) {
-    if (flippedCards.length === 2) return;
-    setFlippedCards([...flippedCards, index]);
+    if (flippedCards.length === 2 || matchedCards.includes(index)) return;
 
-    if (flippedCards.length === 1) {
-      setTimeout(() => checkMatch(), 1000);
-    }
+    setFlippedCards((prev) => {
+      const newFlippedCards = [...prev, index];
+      if (newFlippedCards.length === 2) {
+        checkMatch(newFlippedCards);
+      }
+      return newFlippedCards;
+    });
   }
 
-  function checkMatch() {
-    const [first, second] = flippedCards;
+  function checkMatch(currentFlippedCards) {
+    const [first, second] = currentFlippedCards;
+    console.log(`Comparing cards: ${first} and ${second}`);
+    console.log(
+      `Emojis: ${selectedEmojis[first]} and ${selectedEmojis[second]}`
+    );
+
     if (selectedEmojis[first] === selectedEmojis[second]) {
-      // Cards match, keep them flipped
-    } else {
-      // Cards don't match, flip back
+      console.log(`Match found! Emoji: ${selectedEmojis[first]}`);
+      setMatchedCards((prev) => [...prev, first, second]);
       setFlippedCards([]);
+    } else {
+      console.log("No match. Flipping cards back.");
+      setTimeout(() => {
+        setFlippedCards([]);
+      }, 1000);
     }
   }
 
@@ -48,6 +61,7 @@ export default function App() {
         <MemoryCard
           emojis={selectedEmojis}
           flippedCards={flippedCards}
+          matchedCards={matchedCards}
           handleClick={turnCard}
         />
       )}
