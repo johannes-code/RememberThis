@@ -15,6 +15,7 @@ export default function App() {
 
     setTimeout(() => {
       const selectedArray = emojiArrays.smily;
+
       const shuffledEmojis = shuffleArray(selectedArray).slice(0, 10);
       setSelectedEmojis(
         [...shuffledEmojis, ...shuffledEmojis].sort(() => Math.random() - 0.5)
