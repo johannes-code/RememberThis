@@ -10,13 +10,18 @@ export default function App() {
   const [matchedCards, setMatchedCards] = useState([]);
 
   function startGame() {
-    const selectedArray = emojiArrays.smily;
-    const shuffledEmojis = shuffleArray(selectedArray).slice(0, 10);
-    setSelectedEmojis(
-      [...shuffledEmojis, ...shuffledEmojis].sort(() => Math.random() - 0.5)
-    );
     setFlippedCards([]);
-    setIsGameOn(true);
+    setMatchedCards([]);
+
+    setTimeout(() => {
+      const selectedArray = emojiArrays.smily;
+      const shuffledEmojis = shuffleArray(selectedArray).slice(0, 10);
+      setSelectedEmojis(
+        [...shuffledEmojis, ...shuffledEmojis].sort(() => Math.random() - 0.5)
+      );
+      setFlippedCards([]);
+      setIsGameOn(true);
+    });
   }
 
   function turnCard(index) {
@@ -58,12 +63,18 @@ export default function App() {
           Start Game
         </RegularButton>
       ) : (
-        <MemoryCard
-          emojis={selectedEmojis}
-          flippedCards={flippedCards}
-          matchedCards={matchedCards}
-          handleClick={turnCard}
-        />
+        <>
+          <MemoryCard
+            emojis={selectedEmojis}
+            flippedCards={flippedCards}
+            matchedCards={matchedCards}
+            handleClick={turnCard}
+          />
+
+          <RegularButton type="button" handleClick={startGame}>
+            Restart Game
+          </RegularButton>
+        </>
       )}
     </main>
   );
