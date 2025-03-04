@@ -14,9 +14,9 @@ export default function App() {
     setMatchedCards([]);
 
     setTimeout(() => {
-      const selectedArray = emojiArrays.smily;
-
-      const shuffledEmojis = shuffleArray(selectedArray).slice(0, 10);
+      const selectedArrays = [emojiArrays.smily, emojiArrays.animal, emojiArrays.food, emojiArrays.activity, emojiArrays.symbol, emojiArrays.object] ;
+      const combinedArray = [...emojiArrays.smily, ...emojiArrays.animal, ...emojiArrays.food, ...emojiArrays.activity, ...emojiArrays.symbol, ...emojiArrays.object] ;
+      const shuffledEmojis = shuffleArray(combinedArray).slice(0, 10);
       setSelectedEmojis(
         [...shuffledEmojis, ...shuffledEmojis].sort(() => Math.random() - 0.5)
       );
