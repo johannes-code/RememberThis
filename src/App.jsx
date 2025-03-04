@@ -8,23 +8,36 @@ export default function App() {
   const [selectedEmojis, setSelectedEmojis] = useState([]);
   const [flippedCards, setFlippedCards] = useState([]);
   const [matchedCards, setMatchedCards] = useState([]);
+  const [currentCategory, setCurrentCategory] = useState(null);
+  const handleCategoryChange = (category) => {
+    console.log("Selected category:", category === null ? "random" : category);
+      setCurrentCategory(category);
+     
+  };
 
   function startGame() {
+    console.log("Starting game...")
+    let selectedArray;
+    if (currentCategory === null) {
+      
+    const allCategories = Object.keys(emojiArrays);
+    const randomCategories = shuffleArray(allCategories).slice(0, 3); 
+    selectedArray = randomCategories.flatMap(category => emojiArrays[category]);
+    } else {
+      
+    selectedArray = emojiArrays[currentCategory];
+    }
+  
+    const shuffledEmojis = shuffleArray(selectedArray).slice(0, 10);
+    setSelectedEmojis(
+      [...shuffledEmojis, ...shuffledEmojis].sort(() => Math.random() - 0.5)
+    );
     setFlippedCards([]);
     setMatchedCards([]);
-
-    setTimeout(() => {
-      const selectedArrays = [emojiArrays.smily, emojiArrays.animal, emojiArrays.food, emojiArrays.activity, emojiArrays.symbol, emojiArrays.object] ;
-      const combinedArray = [...emojiArrays.smily, ...emojiArrays.animal, ...emojiArrays.food, ...emojiArrays.activity, ...emojiArrays.symbol, ...emojiArrays.object] ;
-      const shuffledEmojis = shuffleArray(combinedArray).slice(0, 10);
-      setSelectedEmojis(
-        [...shuffledEmojis, ...shuffledEmojis].sort(() => Math.random() - 0.5)
-      );
-      setFlippedCards([]);
-      setIsGameOn(true);
-    });
+    setIsGameOn(true);
+    console.log("Game started, isGameOn", true);
+    
   }
-
   function turnCard(index) {
     if (flippedCards.length === 2 || matchedCards.includes(index)) return;
 
@@ -60,9 +73,16 @@ export default function App() {
     <main>
       <h1>Memory</h1>
       {!isGameOn ? (
-        <RegularButton type="button" handleClick={startGame}>
-          Start Game
-        </RegularButton>
+        <>
+          <CategorySelector
+            categories={emojiArrays}
+            onSelect={handleCategoryChange}
+            currentCategory={currentCategory}
+          />
+          <RegularButton type="button" onClick={startGame}>
+            Start Game
+          </RegularButton>
+        </>
       ) : (
         <>
           <MemoryCard
@@ -71,14 +91,14 @@ export default function App() {
             matchedCards={matchedCards}
             handleClick={turnCard}
           />
-
-          <RegularButton type="button" handleClick={startGame}>
+          <RegularButton type="button" onClick={startGame}>
             Restart Game
           </RegularButton>
         </>
       )}
     </main>
   );
+  
 }
 
 function shuffleArray(array) {
@@ -92,4 +112,27 @@ function shuffleArray(array) {
     [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
   }
   return shuffled;
+}
+
+function CategorySelector({ categories, onSelect, currentCategory }) {
+  return (
+    <div>
+      {Object.keys(categories).map((category) => (
+        <RegularButton
+          key={category}
+          onClick={() => onSelect(category)}
+          className={currentCategory === category ? 'active' : ''}
+        >
+          {category}
+        </RegularButton>
+      ))}
+      <RegularButton
+        onClick={() => onSelect(null)}
+        className={currentCategory === null ? 'active' : ''}
+        >
+          Random
+        </RegularButton>
+        
+    </div>
+  );
 }
