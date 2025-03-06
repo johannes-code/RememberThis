@@ -11,24 +11,30 @@ export default function App() {
   const [currentCategory, setCurrentCategory] = useState(null);
   const handleCategoryChange = (category) => {
     console.log("Selected category:", category === null ? "random" : category);
-      setCurrentCategory(category);
-     
+    setCurrentCategory(category);
+  };
+  const [numberOfCards, setNumberOfCards] = useState(10);
+  const handleNumberCardsChange = (int) => {
+    setNumberOfCards(int);
   };
 
   function startGame() {
-    console.log("Starting game...")
+    console.log("Starting game...");
     let selectedArray;
     if (currentCategory === null) {
-      
-    const allCategories = Object.keys(emojiArrays);
-    const randomCategories = shuffleArray(allCategories).slice(0, 3); 
-    selectedArray = randomCategories.flatMap(category => emojiArrays[category]);
+      const allCategories = Object.keys(emojiArrays);
+      const randomCategories = shuffleArray(allCategories).slice(0, 3);
+      selectedArray = randomCategories.flatMap(
+        (category) => emojiArrays[category]
+      );
     } else {
-      
-    selectedArray = emojiArrays[currentCategory];
+      selectedArray = emojiArrays[currentCategory];
     }
-  
-    const shuffledEmojis = shuffleArray(selectedArray).slice(0, 10);
+
+    const shuffledEmojis = shuffleArray(selectedArray).slice(
+      0,
+      numberOfCards / 2
+    );
     setSelectedEmojis(
       [...shuffledEmojis, ...shuffledEmojis].sort(() => Math.random() - 0.5)
     );
@@ -36,7 +42,6 @@ export default function App() {
     setMatchedCards([]);
     setIsGameOn(true);
     console.log("Game started, isGameOn", true);
-    
   }
   function turnCard(index) {
     if (flippedCards.length === 2 || matchedCards.includes(index)) return;
@@ -74,6 +79,15 @@ export default function App() {
       <h1>Memory</h1>
       {!isGameOn ? (
         <>
+          <p>Number of cards: {numberOfCards}</p>
+          <input
+            type="number"
+            value={numberOfCards}
+            onChange={(e) => {
+              console.log("Input value:", e.target.value);
+              handleNumberCardsChange(parseInt(e.target.value));
+            }}
+          />
           <CategorySelector
             categories={emojiArrays}
             onSelect={handleCategoryChange}
@@ -98,41 +112,39 @@ export default function App() {
       )}
     </main>
   );
-  
-}
 
-function shuffleArray(array) {
-  if (!Array.isArray(array)) {
-    console.error("Input is not an array: ", array);
-    return [];
+  function shuffleArray(array) {
+    if (!Array.isArray(array)) {
+      console.error("Input is not an array: ", array);
+      return [];
+    }
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
   }
-  const shuffled = [...array];
-  for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-  }
-  return shuffled;
-}
 
-function CategorySelector({ categories, onSelect, currentCategory }) {
-  return (
-    <div>
-      {Object.keys(categories).map((category) => (
+  function CategorySelector({ categories, onSelect, currentCategory }) {
+    return (
+      <div>
+        {Object.keys(categories).map((category) => (
+          <RegularButton
+            key={category}
+            onClick={() => onSelect(category)}
+            className={currentCategory === category ? "active" : ""}
+          >
+            {category}
+          </RegularButton>
+        ))}
         <RegularButton
-          key={category}
-          onClick={() => onSelect(category)}
-          className={currentCategory === category ? 'active' : ''}
-        >
-          {category}
-        </RegularButton>
-      ))}
-      <RegularButton
-        onClick={() => onSelect(null)}
-        className={currentCategory === null ? 'active' : ''}
+          onClick={() => onSelect(null)}
+          className={currentCategory === null ? "active" : ""}
         >
           Random
         </RegularButton>
-        
-    </div>
-  );
+      </div>
+    );
+  }
 }
