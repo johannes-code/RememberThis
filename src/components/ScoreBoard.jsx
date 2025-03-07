@@ -1,7 +1,5 @@
-import { useClickCounter } from "./ClickCounter";
-
-export function ScoreBoard() {
-  const { count } = useClickCounter();
+export function ScoreBoard({ count, time }) {
+  const timestamp = new Date().toISOString();
   //Best Month/ Week / Day
 
   // Name
@@ -10,5 +8,11 @@ export function ScoreBoard() {
   // Number of clicks
   // Number of cards
 
-  return <p>Number of clicks{count}</p>;
+  return (
+    <div>
+      <p>Number of clicks{count}</p>
+      <p>Time taken: {time} seconds</p>
+      <p>Score set on: {timestamp}</p>
+    </div>
+  );
 }

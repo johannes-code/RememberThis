@@ -4,8 +4,15 @@ import RegularButton from "./components/RegularButton";
 import { emojiArrays } from "./data/emojiArray";
 import { useClickCounter } from "./components/ClickCounter";
 import { ScoreBoard } from "./components/ScoreBoard";
+import {
+  useGameTimer,
+  GameTimer as GameTimerComponent,
+} from "./components/GameTimer";
+import { HighscoreCalculator } from "./components/highscoreCalculator";
 
 export default function App() {
+  const [highscores, setHighscores] = useState([]);
+  const { time, startTimer, stopTimer, resetTimer } = useGameTimer();
   const { count, increment, resetCount } = useClickCounter();
   const [isGameOn, setIsGameOn] = useState(false);
   const [selectedEmojis, setSelectedEmojis] = useState([]);
@@ -24,6 +31,9 @@ export default function App() {
   function startGame() {
     console.log("Starting game...");
     resetCount();
+    resetTimer();
+    startTimer();
+    console.log(startTimer);
     let selectedArray;
     if (currentCategory === null) {
       const allCategories = Object.keys(emojiArrays);
@@ -70,14 +80,35 @@ export default function App() {
 
     if (selectedEmojis[first] === selectedEmojis[second]) {
       console.log(`Match found! Emoji: ${selectedEmojis[first]}`);
-      setMatchedCards((prev) => [...prev, first, second]);
+      const newMatchedCards = [...matchedCards, first, second];
+      setMatchedCards(newMatchedCards);
       setFlippedCards([]);
+
+      if (newMatchedCards.length === selectedEmojis.length) {
+        console.log("All cards matched! GG.");
+        endGame();
+      }
     } else {
       console.log("No match. Flipping cards back.");
       setTimeout(() => {
         setFlippedCards([]);
       }, 1000);
     }
+  }
+
+  function endGame() {
+    stopTimer();
+    const score = HighscoreCalculator(count, time, numberOfCards);
+    const newScore = {
+      score,
+      clicks: count,
+      time,
+      cardCount: numberOfCards,
+      timestamp: new Date().toISOString(),
+    };
+    setHighscores((prevScores) =>
+      [...prevScores, newScore].sort((a, b) => a.score - b.score).slice(0, 10)
+    );
   }
 
   return (
@@ -114,6 +145,25 @@ export default function App() {
           <RegularButton type="button" onClick={startGame}>
             Restart Game
           </RegularButton>
+
+          <div>
+            <h2>Highscores</h2>
+            {highscores.map((score, index) => (
+              <div
+                key={index}
+                style={{ borderBottom: "1px solid #ccc", padding: "10px" }}
+              >
+                <p>
+                  <strong>Rank #{index + 1}</strong>
+                </p>
+                <p>Score: {score.score}</p>
+                <p>Clicks: {score.clicks}</p>
+                <p>Time: {formatTime(score.time)}</p>
+                <p>Cards: {score.cardCount}</p>
+                <p>Date: {new Date(score.timestamp).toLocaleString()}</p>
+              </div>
+            ))}
+          </div>
 
           <p>Clicks: {count}</p>
         </>
