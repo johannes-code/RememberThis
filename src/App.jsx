@@ -2,8 +2,11 @@ import { useState } from "react";
 import MemoryCard from "./components/MemoryCard";
 import RegularButton from "./components/RegularButton";
 import { emojiArrays } from "./data/emojiArray";
+import { useClickCounter } from "./components/ClickCounter";
+import { ScoreBoard } from "./components/ScoreBoard";
 
 export default function App() {
+  const { count, increment, resetCount } = useClickCounter();
   const [isGameOn, setIsGameOn] = useState(false);
   const [selectedEmojis, setSelectedEmojis] = useState([]);
   const [flippedCards, setFlippedCards] = useState([]);
@@ -20,6 +23,7 @@ export default function App() {
 
   function startGame() {
     console.log("Starting game...");
+    resetCount();
     let selectedArray;
     if (currentCategory === null) {
       const allCategories = Object.keys(emojiArrays);
@@ -45,6 +49,8 @@ export default function App() {
   }
   function turnCard(index) {
     if (flippedCards.length === 2 || matchedCards.includes(index)) return;
+
+    increment();
 
     setFlippedCards((prev) => {
       const newFlippedCards = [...prev, index];
@@ -108,6 +114,8 @@ export default function App() {
           <RegularButton type="button" onClick={startGame}>
             Restart Game
           </RegularButton>
+
+          <p>Clicks: {count}</p>
         </>
       )}
     </main>
@@ -144,6 +152,7 @@ export default function App() {
         >
           Random
         </RegularButton>
+        <ScoreBoard />
       </div>
     );
   }
