@@ -97,7 +97,8 @@ export default function App() {
 
   function endGame() {
     stopTimer();
-    const score = HighscoreCalculator(count, time, numberOfCards);
+    // const score = HighscoreCalculator(count, time, numberOfCards);
+    const score = 10;
     const newScore = {
       score,
       clicks: count,
