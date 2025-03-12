@@ -13,3 +13,12 @@ export function GameTimer() {
     />
   );
 }
+
+export function useGameTimer() {
+  return {
+    time: new Date(),
+    startTimer: () => {},
+    stopTimer: () => {},
+    resetTimer: () => {},
+  };
+}
