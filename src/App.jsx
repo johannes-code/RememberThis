@@ -8,7 +8,6 @@ import {
   useGameTimer,
   GameTimer as GameTimerComponent,
 } from "./components/GameTimer";
-import { HighscoreCalculator } from "./components/highscoreCalculator";
 
 export default function App() {
   const [highscores, setHighscores] = useState([]);
