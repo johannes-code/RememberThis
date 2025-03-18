@@ -1,17 +1,14 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import MemoryCard from "./components/MemoryCard";
 import RegularButton from "./components/RegularButton";
 import { emojiArrays } from "./data/emojiArray";
 import { useClickCounter } from "./components/ClickCounter";
 import { ScoreBoard } from "./components/ScoreBoard";
-import {
-  useGameTimer,
-  GameTimer as GameTimerComponent,
-} from "./components/GameTimer";
+import { GameTimer } from "./components/GameTimer";
 
 export default function App() {
   const [highscores, setHighscores] = useState([]);
-  const { time, startTimer, stopTimer, resetTimer } = useGameTimer();
+  const timeRef = useRef();
   const { count, increment, resetCount } = useClickCounter();
   const [isGameOn, setIsGameOn] = useState(false);
   const [selectedEmojis, setSelectedEmojis] = useState([]);
@@ -30,9 +27,9 @@ export default function App() {
   function startGame() {
     console.log("Starting game...");
     resetCount();
-    resetTimer();
-    startTimer();
-    console.log(startTimer);
+    timeRef.current.resetTimer();
+    timeRef.current.startTimer();
+
     let selectedArray;
     if (currentCategory === null) {
       const allCategories = Object.keys(emojiArrays);
@@ -43,7 +40,6 @@ export default function App() {
     } else {
       selectedArray = emojiArrays[currentCategory];
     }
-
     const shuffledEmojis = shuffleArray(selectedArray).slice(
       0,
       numberOfCards / 2
@@ -56,6 +52,7 @@ export default function App() {
     setIsGameOn(true);
     console.log("Game started, isGameOn", true);
   }
+
   function turnCard(index) {
     if (flippedCards.length === 2 || matchedCards.includes(index)) return;
 
@@ -96,13 +93,12 @@ export default function App() {
   }
 
   function endGame() {
-    stopTimer();
+    timeRef.current?.pauseTimer();
     // const score = HighscoreCalculator(count, time, numberOfCards);
     const score = 10;
     const newScore = {
       score,
       clicks: count,
-      time,
       cardCount: numberOfCards,
       timestamp: new Date().toISOString(),
     };
@@ -114,6 +110,7 @@ export default function App() {
   return (
     <main>
       <h1>Memory</h1>
+      <GameTimer ref={timeRef} />
       {!isGameOn ? (
         <>
           <p>Number of cards: {numberOfCards}</p>
