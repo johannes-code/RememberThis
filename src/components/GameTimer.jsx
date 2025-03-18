@@ -10,15 +10,18 @@ export const GameTimer = forwardRef((props, ref) => {
   const [timer, setTimer] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
   const timeInterval = useRef(null);
+  const [gameEnded, setGameEnded] = useState(0);
 
   useImperativeHandle(ref, () => ({
     startTimer,
     resetTimer,
+    stopTimer,
     pauseTimer: () => {
       if (!isRunning) return;
       setIsRunning(false);
       clearInterval(timeInterval.current);
     },
+    formatTime,
   }));
 
   const startTimer = () => {
@@ -33,6 +36,13 @@ export const GameTimer = forwardRef((props, ref) => {
     if (!isRunning) return; // Do nothing if not running
     setIsRunning(false);
     clearInterval(timeInterval.current);
+  };
+
+  const stopTimer = () => {
+    setIsRunning(false);
+    setGameEnded(true);
+    clearInterval(timeInterval.current);
+    return timer;
   };
 
   const resetTimer = () => {
@@ -58,10 +68,16 @@ export const GameTimer = forwardRef((props, ref) => {
 
   // Cleanup interval on component unmount
   useEffect(() => {
+    let interval;
+    if (isRunning && !gameEnded) {
+      interval = setInterval(() => {
+        setTimer((prevTimer) => prevTimer + 10);
+      }, 10);
+    }
     return () => {
-      clearInterval(timeInterval.current);
+      clearInterval(interval);
     };
-  }, []);
+  }, [isRunning, gameEnded]);
 
   return (
     <div>

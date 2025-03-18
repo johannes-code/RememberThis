@@ -93,12 +93,11 @@ export default function App() {
   }
 
   function endGame() {
-    timeRef.current?.pauseTimer();
-    // const score = HighscoreCalculator(count, time, numberOfCards);
-    const score = 10;
+    const finalTime = timeRef.current.stopTimer();
     const newScore = {
-      score,
+      score: 10,
       clicks: count,
+      time: finalTime,
       cardCount: numberOfCards,
       timestamp: new Date().toISOString(),
     };
@@ -127,8 +126,23 @@ export default function App() {
             onSelect={handleCategoryChange}
             currentCategory={currentCategory}
           />
-          <RegularButton type="button" onClick={startGame}>
+          <RegularButton
+            type="button"
+            onClick={() => {
+              startGame();
+              timeRef.current.startTimer();
+            }}
+          >
             Start Game
+          </RegularButton>
+          <RegularButton
+            type="button"
+            onClick={() => {
+              timeRef.current.resetTimer();
+              startGame();
+            }}
+          >
+            Restart Game
           </RegularButton>
         </>
       ) : (
@@ -155,7 +169,7 @@ export default function App() {
                 </p>
                 <p>Score: {score.score}</p>
                 <p>Clicks: {score.clicks}</p>
-                <p>Time: {formatTime(score.time)}</p>
+                <p>Time: {timeRef.current?.formatTime(score.time)}</p>
                 <p>Cards: {score.cardCount}</p>
                 <p>Date: {new Date(score.timestamp).toLocaleString()}</p>
               </div>
