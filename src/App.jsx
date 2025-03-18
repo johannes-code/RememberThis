@@ -93,7 +93,10 @@ export default function App() {
   }
 
   function endGame() {
+    
     const finalTime = timeRef.current.stopTimer();
+    setIsGameOn(false);
+    console.log(setIsGameOn)
     const newScore = {
       score: 10,
       clicks: count,
@@ -109,7 +112,7 @@ export default function App() {
   return (
     <main>
       <h1>Memory</h1>
-      <GameTimer ref={timeRef} />
+      <GameTimer ref={timeRef} isGameOn={isGameOn}/>
       {!isGameOn ? (
         <>
           <p>Number of cards: {numberOfCards}</p>

@@ -79,6 +79,12 @@ export const GameTimer = forwardRef((props, ref) => {
     };
   }, [isRunning, gameEnded]);
 
+  useEffect(() => {
+    if (!props.isGameOn) {
+      stopTimer();
+    }
+  }, [props.isGameOn]);
+
   return (
     <div>
       <p>Time: {formatTime(timer)}</p>
