@@ -8,7 +8,7 @@ import { GameTimer } from "./components/GameTimer";
 
 export default function App() {
   const [highscores, setHighscores] = useState([]);
-  const timeRef = useRef();
+  const timerRef = useRef(null);
   const { count, increment, resetCount } = useClickCounter();
   const [isGameOn, setIsGameOn] = useState(false);
   const [selectedEmojis, setSelectedEmojis] = useState([]);
@@ -27,8 +27,8 @@ export default function App() {
   function startGame() {
     console.log("Starting game...");
     resetCount();
-    timeRef.current.resetTimer();
-    timeRef.current.startTimer();
+    timerRef.current.resetTimer();
+    timerRef.current.startTimer();
 
     let selectedArray;
     if (currentCategory === null) {
@@ -93,10 +93,11 @@ export default function App() {
   }
 
   function endGame() {
-    
-    const finalTime = timeRef.current.stopTimer();
+    timerRef.current?.stopTimer();
+    const finalTime = timerRef.current?.formatTime(timerRef.current.time);
+
     setIsGameOn(false);
-    console.log(setIsGameOn)
+
     const newScore = {
       score: 10,
       clicks: count,
@@ -108,11 +109,11 @@ export default function App() {
       [...prevScores, newScore].sort((a, b) => a.score - b.score).slice(0, 10)
     );
   }
-
+  console.log(timerRef.current);
   return (
     <main>
       <h1>Memory</h1>
-      <GameTimer ref={timeRef} isGameOn={isGameOn}/>
+      <GameTimer ref={timerRef} />
       {!isGameOn ? (
         <>
           <p>Number of cards: {numberOfCards}</p>
@@ -133,7 +134,7 @@ export default function App() {
             type="button"
             onClick={() => {
               startGame();
-              timeRef.current.startTimer();
+              timerRef.current.startTimer();
             }}
           >
             Start Game
@@ -141,7 +142,7 @@ export default function App() {
           <RegularButton
             type="button"
             onClick={() => {
-              timeRef.current.resetTimer();
+              timerRef.current.resetTimer();
               startGame();
             }}
           >
@@ -172,7 +173,7 @@ export default function App() {
                 </p>
                 <p>Score: {score.score}</p>
                 <p>Clicks: {score.clicks}</p>
-                <p>Time: {timeRef.current?.formatTime(score.time)}</p>
+                <p>Time: {timerRef.current?.formatTime(score.time)}</p>
                 <p>Cards: {score.cardCount}</p>
                 <p>Date: {new Date(score.timestamp).toLocaleString()}</p>
               </div>
