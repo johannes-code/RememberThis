@@ -96,6 +96,8 @@ export default function App() {
     timerRef.current?.stopTimer();
     const finalTime = timerRef.current?.formatTime(timerRef.current.time);
 
+    console.log(finalTime);
+
     const newScore = {
       score: 10,
       clicks: count,
@@ -107,7 +109,7 @@ export default function App() {
       [...prevScores, newScore].sort((a, b) => a.score - b.score).slice(0, 10)
     );
   }
-  console.log(timerRef.current);
+
   return (
     <main>
       <h1>Memory</h1>
@@ -171,7 +173,7 @@ export default function App() {
                 </p>
                 <p>Score: {score.score}</p>
                 <p>Clicks: {score.clicks}</p>
-                <p>Time: {timerRef.current?.formatTime(score.time)}</p>
+                <p>Time: {score.time}</p>
                 <p>Cards: {score.cardCount}</p>
                 <p>Date: {new Date(score.timestamp).toLocaleString()}</p>
               </div>

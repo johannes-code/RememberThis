@@ -33,6 +33,7 @@ export function GameTimer({ ref: timerRef }) {
       stopTimer,
       resetTimer,
       formatTime,
+      time: timer,
     };
   }
 
