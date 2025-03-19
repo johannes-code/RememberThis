@@ -7,10 +7,11 @@ import { ScoreBoard } from "./components/ScoreBoard";
 import { GameTimer } from "./components/GameTimer";
 
 export default function App() {
+  const [isGameOn, setIsGameOn] = useState(false);
   const [highscores, setHighscores] = useState([]);
   const timerRef = useRef(null);
-  const { count, increment, resetCount } = useClickCounter();
-  const [isGameOn, setIsGameOn] = useState(false);
+  const { count, increment, startCounting, stopCounting, resetCount } =
+    useClickCounter();
   const [selectedEmojis, setSelectedEmojis] = useState([]);
   const [flippedCards, setFlippedCards] = useState([]);
   const [matchedCards, setMatchedCards] = useState([]);
@@ -26,7 +27,7 @@ export default function App() {
 
   function startGame() {
     console.log("Starting game...");
-    resetCount();
+
     timerRef.current.resetTimer();
     timerRef.current.startTimer();
 
@@ -50,7 +51,11 @@ export default function App() {
     setFlippedCards([]);
     setMatchedCards([]);
     setIsGameOn(true);
+    resetCount();
+    startCounting();
+
     console.log("Game started, isGameOn", true);
+    console.log(count);
   }
 
   function turnCard(index) {
@@ -95,9 +100,7 @@ export default function App() {
   function endGame() {
     timerRef.current?.stopTimer();
     const finalTime = timerRef.current?.formatTime(timerRef.current.time);
-
-    console.log(finalTime);
-
+    stopCounting();
     const newScore = {
       score: 10,
       clicks: count,
