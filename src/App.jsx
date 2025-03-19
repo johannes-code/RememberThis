@@ -96,8 +96,6 @@ export default function App() {
     timerRef.current?.stopTimer();
     const finalTime = timerRef.current?.formatTime(timerRef.current.time);
 
-    setIsGameOn(false);
-
     const newScore = {
       score: 10,
       clicks: count,
