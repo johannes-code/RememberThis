@@ -86,6 +86,7 @@ export default function App() {
       setFlippedCards([]);
 
       if (newMatchedCards.length === selectedEmojis.length) {
+        stopCounting();
         console.log("All cards matched! GG.");
         endGame();
       }
@@ -101,17 +102,35 @@ export default function App() {
     timerRef.current?.stopTimer();
     const finalTime = timerRef.current?.formatTime(timerRef.current.time);
     stopCounting();
-    const newScore = {
-      score: 10,
-      clicks: count,
-      time: finalTime,
-      cardCount: numberOfCards,
-      timestamp: new Date().toISOString(),
-    };
-    setHighscores((prevScores) =>
-      [...prevScores, newScore].sort((a, b) => a.score - b.score).slice(0, 10)
-    );
+    setHighscores((prevScores) => {
+      const newScore = {
+        score: 10,
+        clicks: count + 1,
+        time: finalTime,
+        cardCount: numberOfCards,
+        timestamp: new Date().toISOString(),
+      };
+      return [...prevScores, newScore]
+        .sort((a, b) => a.score - b.score)
+        .slice(0, 10);
+    });
   }
+
+  // function endGame() {
+  //   timerRef.current?.stopTimer();
+  //   const finalTime = timerRef.current?.formatTime(timerRef.current.time);
+  //   stopCounting();
+  //   const newScore = {
+  //     score: 10,
+  //     clicks: count,
+  //     time: finalTime,
+  //     cardCount: numberOfCards,
+  //     timestamp: new Date().toISOString(),
+  //   };
+  //   setHighscores((prevScores) =>
+  //     [...prevScores, newScore].sort((a, b) => a.score - b.score).slice(0, 10)
+  //   );
+  // }
 
   return (
     <main>
