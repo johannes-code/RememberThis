@@ -76,6 +76,7 @@ export default function App() {
   function startGame() {
     console.log("Starting game...");
     setHasGameEnded(false);
+    hasUpdatedHighscore = false;
     timerRef.current.resetTimer();
     setIsGameOn(true);
 
@@ -145,9 +146,13 @@ export default function App() {
       }, 1000);
     }
   }
+  let hasUpdatedHighscore = false;
 
   function endGame() {
+    if (hasUpdatedHighscore) return;
+    hasUpdatedHighscore = true;
     if (hasGameEnded) return;
+
     console.log("endGame called. current count:", count);
     timerRef.current?.stopTimer();
     const finalTime = timerRef.current?.formatTime(timerRef.current.time);
@@ -159,8 +164,10 @@ export default function App() {
       cardCount: numberOfCards,
       timestamp: new Date().toISOString(),
     };
-
+    
+    
     setHighscores((prevScores) => {
+      console.log("setHighscores called, current highscores:", prevScores);
       const newScoreWithId = { ...newScore, id: Date.now() };
       if (prevScores.some((score) => score.id === newScoreWithId.id)) {
         return prevScores;
