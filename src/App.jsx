@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import MemoryCard from "./components/MemoryCard";
 import RegularButton from "./components/RegularButton";
 import { emojiArrays } from "./data/emojiArray";
@@ -6,7 +6,44 @@ import { useClickCounter } from "./components/ClickCounter";
 import { ScoreBoard } from "./components/ScoreBoard";
 import { GameTimer } from "./components/GameTimer";
 
+function shuffleArray(array) {
+  if (!Array.isArray(array)) {
+    console.error("Input is not an array: ", array);
+    return [];
+  }
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
+function CategorySelector({ categories, onSelect, currentCategory }) {
+  return (
+    <div>
+      {Object.keys(categories).map((category) => (
+        <RegularButton
+          key={category}
+          onClick={() => onSelect(category)}
+          className={currentCategory === category ? "active" : ""}
+        >
+          {category}
+        </RegularButton>
+      ))}
+      <RegularButton
+        onClick={() => onSelect(null)}
+        className={currentCategory === null ? "active" : ""}
+      >
+        Random
+      </RegularButton>
+      <ScoreBoard />
+    </div>
+  );
+}
+
 export default function App() {
+  const [hasGameEnded, setHasGameEnded] = useState(false);
   const [isGameOn, setIsGameOn] = useState(false);
   const [highscores, setHighscores] = useState([]);
   const timerRef = useRef(null);
@@ -25,11 +62,22 @@ export default function App() {
     setNumberOfCards(int);
   };
 
+  useEffect(() => {
+    if (isGameOn) {
+      timerRef.current.startTimer();
+    } else {
+      timerRef.current.stopTimer();
+    }
+    return () => {
+      timerRef.current.stopTimer();
+    };
+  }, [isGameOn]);
+
   function startGame() {
     console.log("Starting game...");
-
+    setHasGameEnded(false);
     timerRef.current.resetTimer();
-    timerRef.current.startTimer();
+    setIsGameOn(true);
 
     let selectedArray;
     if (currentCategory === null) {
@@ -50,7 +98,6 @@ export default function App() {
     );
     setFlippedCards([]);
     setMatchedCards([]);
-    setIsGameOn(true);
     resetCount();
     startCounting();
 
@@ -85,7 +132,8 @@ export default function App() {
       setMatchedCards(newMatchedCards);
       setFlippedCards([]);
 
-      if (newMatchedCards.length === selectedEmojis.length) {
+      if (newMatchedCards.length === selectedEmojis.length && !hasGameEnded) {
+        setHasGameEnded(true);
         stopCounting();
         console.log("All cards matched! GG.");
         endGame();
@@ -99,38 +147,38 @@ export default function App() {
   }
 
   function endGame() {
+    if (hasGameEnded) return;
+    console.log("endGame called. current count:", count);
     timerRef.current?.stopTimer();
     const finalTime = timerRef.current?.formatTime(timerRef.current.time);
     stopCounting();
+    const newScore = {
+      score: 10,
+      clicks: count + 1,
+      time: finalTime,
+      cardCount: numberOfCards,
+      timestamp: new Date().toISOString(),
+    };
+
     setHighscores((prevScores) => {
-      const newScore = {
-        score: 10,
-        clicks: count + 1,
-        time: finalTime,
-        cardCount: numberOfCards,
-        timestamp: new Date().toISOString(),
-      };
-      return [...prevScores, newScore]
-        .sort((a, b) => a.score - b.score)
+      const newScoreWithId = { ...newScore, id: Date.now() };
+      if (prevScores.some((score) => score.id === newScoreWithId.id)) {
+        return prevScores;
+      }
+      const isNewHighScore =
+        prevScores.length < 10 ||
+        newScoreWithId.score > prevScores[prevScores.length - 1].score;
+      if (isNewHighScore) {
+        const playerName = prompt("New high score! Enter your name:");
+        newScoreWithId.playerName = playerName || "No Name";
+      }
+      const updatedScores = [...prevScores, newScoreWithId]
+        .sort((a, b) => b.score - a.score)
         .slice(0, 10);
+
+      return updatedScores;
     });
   }
-
-  // function endGame() {
-  //   timerRef.current?.stopTimer();
-  //   const finalTime = timerRef.current?.formatTime(timerRef.current.time);
-  //   stopCounting();
-  //   const newScore = {
-  //     score: 10,
-  //     clicks: count,
-  //     time: finalTime,
-  //     cardCount: numberOfCards,
-  //     timestamp: new Date().toISOString(),
-  //   };
-  //   setHighscores((prevScores) =>
-  //     [...prevScores, newScore].sort((a, b) => a.score - b.score).slice(0, 10)
-  //   );
-  // }
 
   return (
     <main>
@@ -152,15 +200,16 @@ export default function App() {
             onSelect={handleCategoryChange}
             currentCategory={currentCategory}
           />
+
           <RegularButton
             type="button"
             onClick={() => {
               startGame();
-              timerRef.current.startTimer();
             }}
           >
             Start Game
           </RegularButton>
+
           <RegularButton
             type="button"
             onClick={() => {
@@ -193,6 +242,7 @@ export default function App() {
                 <p>
                   <strong>Rank #{index + 1}</strong>
                 </p>
+                <p>Name: {score.playerName || "No Name"}</p>
                 <p>Score: {score.score}</p>
                 <p>Clicks: {score.clicks}</p>
                 <p>Time: {score.time}</p>
@@ -207,40 +257,4 @@ export default function App() {
       )}
     </main>
   );
-
-  function shuffleArray(array) {
-    if (!Array.isArray(array)) {
-      console.error("Input is not an array: ", array);
-      return [];
-    }
-    const shuffled = [...array];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    }
-    return shuffled;
-  }
-
-  function CategorySelector({ categories, onSelect, currentCategory }) {
-    return (
-      <div>
-        {Object.keys(categories).map((category) => (
-          <RegularButton
-            key={category}
-            onClick={() => onSelect(category)}
-            className={currentCategory === category ? "active" : ""}
-          >
-            {category}
-          </RegularButton>
-        ))}
-        <RegularButton
-          onClick={() => onSelect(null)}
-          className={currentCategory === null ? "active" : ""}
-        >
-          Random
-        </RegularButton>
-        <ScoreBoard />
-      </div>
-    );
-  }
 }
