@@ -3,7 +3,9 @@
         {"src": "/api/**/*.js", "use": "@vercel/node" },
         {"src": "/client/**", "use": "@vercel/static-build" }
     ],
-        
-    "rewrites": [{ "source": "/(.*)", "destination": "/" }]
+    "routes": [
+        {"src": "/api/(.*)", "dest": "api/highscores.js" },
+        {"src": "/(.*)", "dest": "client" }
+    ]
     
 }

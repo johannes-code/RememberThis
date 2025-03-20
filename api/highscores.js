@@ -1,8 +1,10 @@
+import dotenv from "dotenv";
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import serverless from "serverless-http";
 
+dotenv.config();
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -24,22 +26,32 @@ const highscoreSchema = new mongoose.Schema({
 const Highscore = mongoose.model("Highscore", highscoreSchema);
 
 //API Routes
-app.get("/api/highscores.js", async (req, res) => {
+app.get("/api/highscores", async (req, res) => {
   try {
     const highscores = await Highscore.find().sort({ score: -1 }).limit(30);
     res.json(highscores);
   } catch (error) {
-    res.status(500).json({ error: "Failed to fetch highscores" });
+    console.error("Error fetching highscores:", error);
+    res
+      .status(500)
+      .json({ error: "Failed to fetch highscores", details: error.message });
   }
 });
 
 app.post("/api/highscores", async (req, res) => {
   try {
+    const { playerName, score, clicks, time, cardCount } = req.body;
+    if (!playerName || !score || !clicks || !time || !cardCount) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
     const newHighscore = new Highscore(req.body);
     await newHighscore.save();
     res.status(201).json(newHighscore);
   } catch (error) {
-    res.status(500).json({ error: "Failed to save highscore" });
+    console.error("Error saving highscore:", error);
+    res
+      .status(500)
+      .json({ error: "Failed to save highscore", details: error.message });
   }
 });
 
