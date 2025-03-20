@@ -1,10 +1,10 @@
 import dotenv from "dotenv";
+dotenv.config();
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import serverless from "serverless-http";
 
-dotenv.config();
 const app = express();
 app.use(cors());
 app.use(express.json());
