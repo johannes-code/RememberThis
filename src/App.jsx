@@ -6,6 +6,7 @@ import { useClickCounter } from "./components/ClickCounter";
 import { ScoreBoard } from "./components/ScoreBoard";
 import { GameTimer } from "./components/GameTimer";
 
+// Helper function: Shuffle array (outside App component)
 function shuffleArray(array) {
   if (!Array.isArray(array)) {
     console.error("Input is not an array: ", array);
@@ -19,6 +20,7 @@ function shuffleArray(array) {
   return shuffled;
 }
 
+// Helper Component: Category Selector (outside App component)
 function CategorySelector({ categories, onSelect, currentCategory }) {
   return (
     <div>
@@ -42,22 +44,6 @@ function CategorySelector({ categories, onSelect, currentCategory }) {
   );
 }
 
-//Fetch highscores
-const fetchHighscores = async () => {
-  const response = await fetch("/api/highscores");
-  const data = await response.json();
-  setHighscores(data);
-};
-
-//Save new Highscore
-const saveHighscore = async (newScore) => {
-  await fetch("/api/highscores", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(newScore),
-  });
-};
-
 export default function App() {
   const [hasGameEnded, setHasGameEnded] = useState(false);
   const [isGameOn, setIsGameOn] = useState(false);
@@ -78,6 +64,31 @@ export default function App() {
     setNumberOfCards(int);
   };
 
+  //Fetch highscores
+  const fetchHighscores = async () => {
+    try {
+      const response = await fetch("/api/highscores");
+      const data = await response.json();
+      setHighscores(data); // Use the setHighscores from the App component
+    } catch (error) {
+      console.error("Error fetching highscores:", error);
+    }
+  };
+
+  //Save new Highscore
+  const saveHighscore = async (newScore) => {
+    try {
+      await fetch("/api/highscores", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newScore),
+      });
+      fetchHighscores(); // Refresh highscores after saving
+    } catch (error) {
+      console.error("Error saving highscore:", error);
+    }
+  };
+
   useEffect(() => {
     if (isGameOn) {
       timerRef.current.startTimer();
@@ -89,10 +100,14 @@ export default function App() {
     };
   }, [isGameOn]);
 
+  // Fetch initial highscores on component mount
+  useEffect(() => {
+    fetchHighscores();
+  }, []);
+
   function startGame() {
     console.log("Starting game...");
     setHasGameEnded(false);
-    hasUpdatedHighscore = false;
     timerRef.current.resetTimer();
     setIsGameOn(true);
 
@@ -162,13 +177,9 @@ export default function App() {
       }, 1000);
     }
   }
-  let hasUpdatedHighscore = false;
 
   function endGame() {
-    if (hasUpdatedHighscore) return;
-    hasUpdatedHighscore = true;
     if (hasGameEnded) return;
-
     console.log("endGame called. current count:", count);
     timerRef.current?.stopTimer();
     const finalTime = timerRef.current?.formatTime(timerRef.current.time);
@@ -180,26 +191,7 @@ export default function App() {
       cardCount: numberOfCards,
       timestamp: new Date().toISOString(),
     };
-
-    setHighscores((prevScores) => {
-      console.log("setHighscores called, current highscores:", prevScores);
-      const newScoreWithId = { ...newScore, id: Date.now() };
-      if (prevScores.some((score) => score.id === newScoreWithId.id)) {
-        return prevScores;
-      }
-      const isNewHighScore =
-        prevScores.length < 10 ||
-        newScoreWithId.score > prevScores[prevScores.length - 1].score;
-      if (isNewHighScore) {
-        const playerName = prompt("New high score! Enter your name:");
-        newScoreWithId.playerName = playerName || "No Name";
-      }
-      const updatedScores = [...prevScores, newScoreWithId]
-        .sort((a, b) => b.score - a.score)
-        .slice(0, 10);
-
-      return updatedScores;
-    });
+    saveHighscore(newScore);
   }
 
   return (
