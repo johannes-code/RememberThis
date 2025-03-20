@@ -42,6 +42,22 @@ function CategorySelector({ categories, onSelect, currentCategory }) {
   );
 }
 
+//Fetch highscores
+const fetchHighscores = async () => {
+  const response = await fetch("/api/highscores");
+  const data = await response.json();
+  setHighscores(data);
+};
+
+//Save new Highscore
+const saveHighscore = async (newScore) => {
+  await fetch("/api/highscores", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(newScore),
+  });
+};
+
 export default function App() {
   const [hasGameEnded, setHasGameEnded] = useState(false);
   const [isGameOn, setIsGameOn] = useState(false);
@@ -164,8 +180,7 @@ export default function App() {
       cardCount: numberOfCards,
       timestamp: new Date().toISOString(),
     };
-    
-    
+
     setHighscores((prevScores) => {
       console.log("setHighscores called, current highscores:", prevScores);
       const newScoreWithId = { ...newScore, id: Date.now() };
