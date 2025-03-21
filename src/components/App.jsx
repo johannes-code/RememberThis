@@ -1,10 +1,11 @@
 import { useState, useRef, useEffect } from "react";
-import MemoryCard from "./components/MemoryCard";
-import RegularButton from "./components/RegularButton";
-import { emojiArrays } from "./data/emojiArray";
-import { useClickCounter } from "./components/ClickCounter";
-import { ScoreBoard } from "./components/ScoreBoard";
-import { GameTimer } from "./components/GameTimer";
+import MemoryCard from "./MemoryCard";
+import RegularButton from "./RegularButton";
+import { emojiArrays } from "../data/emojiArray";
+import { useClickCounter } from "./ClickCounter";
+import { ScoreBoard } from "./ScoreBoard";
+import { GameTimer } from "./GameTimer";
+
 
 // Helper function: Shuffle array (outside App component)
 function shuffleArray(array) {
@@ -43,6 +44,7 @@ function CategorySelector({ categories, onSelect, currentCategory }) {
     </div>
   );
 }
+
 
 export default function App() {
   const [hasGameEnded, setHasGameEnded] = useState(false);
