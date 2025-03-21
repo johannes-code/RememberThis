@@ -1,3 +1,5 @@
+"use client"
+
 import { useState, useRef, useEffect } from "react";
 import MemoryCard from "./MemoryCard";
 import RegularButton from "./RegularButton";
