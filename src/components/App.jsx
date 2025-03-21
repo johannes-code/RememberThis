@@ -11,6 +11,7 @@ import { GameBoard } from "./GameBoard";
 import { HighScoreList } from "./HighScoreList";
 import { GameTimer } from "./GameTimer";
 import { EndGameModal } from "./EndGameModal";
+import { checkMatch } from "./GameLogic";
 
 export default function App() {
   const [hasGameEnded, setHasGameEnded] = useState(false);
@@ -23,16 +24,10 @@ export default function App() {
   const [matchedCards, setMatchedCards] = useState([]);
   const [currentCategory, setCurrentCategory] = useState(null);
   const [numberOfCards, setNumberOfCards] = useState(10);
-
   const handleCategoryChange = (category) => {
     console.log("Selected category:", category === null ? "random" : category);
-    setCurrentCategory(category);
-  };
-
-  const handleNumberCardsChange = (int) => {
-    setNumberOfCards(int);
-  };
-
+    setCurrentCategory(category);  };
+  const handleNumberCardsChange = (int) => { setNumberOfCards(int);};
   const fetchHighscores = async () => {
     try {
       const response = await fetch("/api/highscores");
@@ -98,42 +93,27 @@ export default function App() {
 
   function turnCard(index) {
     if (flippedCards.length === 2 || matchedCards.includes(index)) return;
-
+  
     increment();
-
+  
     setFlippedCards((prev) => {
       const newFlippedCards = [...prev, index];
       if (newFlippedCards.length === 2) {
-        checkMatch(newFlippedCards);
+        checkMatch(
+          newFlippedCards,
+          selectedEmojis,
+          matchedCards,
+          setMatchedCards,
+          setFlippedCards,
+          setHasGameEnded,
+          stopCounting,
+          endGame
+        );
       }
       return newFlippedCards;
     });
   }
-
-  function checkMatch(currentFlippedCards) {
-    const [first, second] = currentFlippedCards;
-    console.log(`Comparing cards: ${first} and ${second}`);
-    console.log(`Emojis: ${selectedEmojis[first]} and ${selectedEmojis[second]}`);
-
-    if (selectedEmojis[first] === selectedEmojis[second]) {
-      console.log(`Match found! Emoji: ${selectedEmojis[first]}`);
-      const newMatchedCards = [...matchedCards, first, second];
-      setMatchedCards(newMatchedCards);
-      setFlippedCards([]);
-
-      if (newMatchedCards.length === selectedEmojis.length && !hasGameEnded) {
-        setHasGameEnded(true);
-        stopCounting();
-        console.log("All cards matched! GG.");
-        endGame();
-      }
-    } else {
-      console.log("No match. Flipping cards back.");
-      setTimeout(() => {
-        setFlippedCards([]);
-      }, 1000);
-    }
-  }
+  
 
   function endGame() {
     if (hasGameEnded) return;
