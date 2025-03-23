@@ -1,18 +1,24 @@
-export function HighScoreList({ highscores }) {
-    return (
-        <div>
-            <h2>Highscores</h2>
-            {highscores.map((score, index) => (
-                <div key={index} style={{ borderBottom: "1px solid #ccc", padding: "10px" }}>
-                    <p><strong>Rank #{index + 1}</strong></p>
-                    <p>Name: {score.playerName || "No name"}</p>
-                    <p>Score: {score.score}</p>
-                    <p>Clicks: {score.clicks}</p>
-                    <p>Time: {score.time}</p>
-                    <p>Cards: {score.cardCount}</p>
-                    <p>Date: {new Date(score.timestamp).toLocaleString()}</p>
-                </div>
-            ))}
+import useHighscoreStore from '../stores/highscore.store';
+
+export function HighScoreList() {
+  const { highscores } = useHighscoreStore();
+
+  return (
+    <div className="highscore-list">
+      <h2>🏆 Top Scores</h2>
+      {highscores.map((score, index) => (
+        <div key={score.id} className="score-entry">
+          <div className="rank-badge">#{index + 1}</div>
+          <div className="score-details">
+            <p>Score: {score.score}</p>
+            <p>Cards: {score.cardCount} | Time: {score.time}s | Clicks: {score.clicks}</p>
+            <p className="score-date">
+              {new Date(score.timestamp).toLocaleDateString()}
+              {score.isPerfect && ' 🌟 Perfect Game!'}
+            </p>
+          </div>
         </div>
-    );
+      ))}
+    </div>
+  );
 }
