@@ -7,9 +7,9 @@ const useCategoryStore = create((set, get) => ({
   emojiArrays: emojiArrays,
   currentCategory: null,
 
-  selectCategory: (categoryValue) => {
-    console.log("Attempting to set category", categoryValue);
-    set({ currentCategory: categoryValue });
+  selectCategory: (category) => {
+    console.log("Attempting to set category", category);
+    set({ currentCategory: category });
     console.log("Current category after update:", get().currentCategory); // Log the selected category
   },
 
