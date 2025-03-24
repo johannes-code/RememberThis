@@ -10,17 +10,13 @@ import { GameTimer } from "./GameTimer";
 import { EndGameModal } from "./EndGameModal";
 
 import useGameStore from "../stores/store";
+import useHighscoreStore from "../stores/highscore.store";
 
 export default function App() {
-  const {
-    isGameOn,
-    hasGameEnded,
-    count,
-    highscores,
-    startGame,
-    fetchHighscores,
-  } = useGameStore();
+  const { isGameOn, hasGameEnded, count, highscores, startGame } =
+    useGameStore();
 
+  const { fetchHighscores } = useHighscoreStore();
   useEffect(() => {
     fetchHighscores();
   }, [fetchHighscores]);
