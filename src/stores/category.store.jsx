@@ -1,4 +1,3 @@
-// src/stores/category.store.js
 import { create } from "zustand";
 import { data } from "../data/data";
 import { emojiArrays } from "../data/emojiArray";
@@ -8,7 +7,11 @@ const useCategoryStore = create((set, get) => ({
   emojiArrays: emojiArrays,
   currentCategory: null,
 
-  selectCategory: (categoryValue) => set({ currentCategory: categoryValue }),
+  selectCategory: (categoryValue) => {
+    console.log("Attempting to set category", categoryValue);
+    set({ currentCategory: categoryValue });
+    console.log("Current category after update:", get().currentCategory); // Log the selected category
+  },
 
   getCategoryEmojis: () => {
     const { currentCategory, emojiArrays } = get();
