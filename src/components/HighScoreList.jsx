@@ -1,4 +1,4 @@
-import useHighscoreStore from '../stores/highscore.store';
+import { useHighscoreStore } from "../stores/index.jsx";
 
 export function HighScoreList() {
   const { highscores } = useHighscoreStore();
@@ -11,10 +11,13 @@ export function HighScoreList() {
           <div className="rank-badge">#{index + 1}</div>
           <div className="score-details">
             <p>Score: {score.score}</p>
-            <p>Cards: {score.cardCount} | Time: {score.time}s | Clicks: {score.clicks}</p>
+            <p>
+              Cards: {score.cardCount} | Time: {score.time}s | Clicks:{" "}
+              {score.clicks}
+            </p>
             <p className="score-date">
               {new Date(score.timestamp).toLocaleDateString()}
-              {score.isPerfect && ' 🌟 Perfect Game!'}
+              {score.isPerfect && " 🌟 Perfect Game!"}
             </p>
           </div>
         </div>

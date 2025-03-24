@@ -1,8 +1,7 @@
-import useScoreStore from "../stores/score.store";
+import { useScoreStore } from "../stores/index.jsx";
 
 export function ScoreBoard() {
-  
-  const { count, time ,timestamp} = useScoreStore;
+  const { count, time, timestamp } = useScoreStore;
   //Best Month/ Week / Day
 
   // Name

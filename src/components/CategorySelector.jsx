@@ -1,7 +1,7 @@
 // src/components/CategorySelector.jsx
 
 import RegularButton from "./common/RegularButton";
-import useCategoryStore from '../stores/category.store';
+import { useCategoryStore } from "../stores/index.jsx";
 
 export function CategorySelector() {
   const { categories, currentCategory, selectCategory } = useCategoryStore();

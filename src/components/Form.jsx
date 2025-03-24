@@ -1,9 +1,9 @@
 // src/components/Form.jsx
-import useGameStore from '../stores/game.store';
+import { useGameStore } from "../stores/index.jsx";
 import RegularButton from "./common/RegularButton";
 
 export default function Form() {
-  const startGame = useGameStore(state => state.startGame);
+  const startGame = useGameStore((state) => state.startGame);
 
   return (
     <div className="wrapper">

@@ -1,6 +1,6 @@
 // src/components/CardCounter.jsx
 
-import useCardCounterStore from "../stores/cardCounter.store";
+import { useCardCounterStore } from "../stores/index.jsx";
 
 export function CardCounter() {
   const { numberOfCards, availableNumbers, setNumberOfCards } =

@@ -1,5 +1,5 @@
 // src/stores/category.store.js
-import { create } from 'zustand';
+import { create } from "zustand";
 
 const useCategoryStore = create((set) => ({
   categories: {}, // This will be populated with your category data

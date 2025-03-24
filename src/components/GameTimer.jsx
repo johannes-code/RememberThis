@@ -1,6 +1,5 @@
 // src/components/GameTimer.jsx
-import React from 'react';
-import useTimerStore from '../stores/timer.store';
+import { useTimerStore } from "../stores/index.jsx";
 
 export function GameTimer() {
   const { formatTime } = useTimerStore();

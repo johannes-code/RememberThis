@@ -4,13 +4,12 @@ import { useEffect } from "react";
 import { CategorySelector } from "./CategorySelector";
 import { GameControls } from "./GameControls";
 import { CardCounter } from "./CardCounter";
-import { GameBoard } from "./GameBoard";
+import GameBoard from "./GameBoard";
 import { HighScoreList } from "./HighScoreList";
 import { GameTimer } from "./GameTimer";
 import { EndGameModal } from "./EndGameModal";
 
-import useGameStore from "../stores/store";
-import useHighscoreStore from "../stores/highscore.store";
+import { useGameStore, useHighscoreStore } from "../stores/index.jsx";
 
 export default function App() {
   const { isGameOn, hasGameEnded, count, highscores, startGame } =

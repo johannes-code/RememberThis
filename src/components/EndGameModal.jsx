@@ -1,13 +1,15 @@
 // src/components/EndGameModal.jsx
 
-import useGameStore from '../stores/game.store';
-import useClickStore from '../stores/click.store';
-import useTimerStore from '../stores/timer.store';
+import {
+  useGameStore,
+  useClickStore,
+  useTimerStore,
+} from "../stores/index.jsx";
 
 export function EndGameModal() {
-  const hasGameEnded = useGameStore(state => state.hasGameEnded);
-  const clicks = useClickStore(state => state.count);
-  const finalTime = useTimerStore(state => state.formatTime());
+  const hasGameEnded = useGameStore((state) => state.hasGameEnded);
+  const clicks = useClickStore((state) => state.count);
+  const finalTime = useTimerStore((state) => state.formatTime());
 
   if (!hasGameEnded) return null;
 

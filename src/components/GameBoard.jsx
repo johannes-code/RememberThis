@@ -1,9 +1,10 @@
 // src/components/GameBoard.jsx
-import useGameStore from '../stores/game.store';
-import MemoryCard from './MemoryCard';
+import { useGameStore } from "../stores/index.jsx";
+import MemoryCard from "./MemoryCard";
 
 export default function GameBoard() {
-  const { selectedEmojis, flippedCards, matchedCards, flipCard } = useGameStore();
+  const { selectedEmojis, flippedCards, matchedCards, flipCard } =
+    useGameStore();
 
   return (
     <MemoryCard

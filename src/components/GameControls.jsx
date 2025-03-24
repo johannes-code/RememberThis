@@ -1,7 +1,6 @@
 // src/components/GameControls.jsx
-import React from 'react';
 import RegularButton from "./common/RegularButton";
-import useGameStore from '../stores/game.store';
+import { useGameStore } from "../stores/index.jsx";
 
 export function GameControls() {
   const { startGame, restartGame } = useGameStore();

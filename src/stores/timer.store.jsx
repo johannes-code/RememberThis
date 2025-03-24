@@ -1,5 +1,5 @@
 // src/stores/timer.store.js
-import { create } from 'zustand';
+import { create } from "zustand";
 
 const useTimerStore = create((set, get) => ({
   timer: 0,

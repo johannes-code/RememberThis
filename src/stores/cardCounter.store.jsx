@@ -1,6 +1,5 @@
-
 // src/stores/cardCounter.store.js
-import { create } from 'zustand';
+import { create } from "zustand";
 
 const useCardCounterStore = create((set) => ({
   numberOfCards: 16, // Default value, could be different
