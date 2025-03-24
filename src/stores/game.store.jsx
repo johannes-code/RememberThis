@@ -9,7 +9,6 @@ const useGameStore = create((set, get) => ({
   numbers: data.numbers,
   emojiArrays: emojiArrays,
   currentCategory: null,
-  selectedNumber: "10",
   numberOfCards: 10,
   selectedEmojis: [],
   flippedCards: [],
@@ -29,11 +28,16 @@ const useGameStore = create((set, get) => ({
   },
 
   setCurrentCategory: (category) => set({ currentCategory: category }),
-  setSelectedNumber: (number) =>
+  setSelectedNumber: (number) => {
+    const adjustedNumber = Math.max(2, parseInt(number, 10));
+    const evenNumber =
+      adjustedNumber % 2 === 0 ? adjustedNumber : adjustedNumber + 1;
     set({
-      selectedNumber: number,
-      numberOfCards: parseInt(number, 10),
-    }),
+      selectedNumber: evenNumber.toString(),
+      numberOfCards: evenNumber,
+    });
+  },
+
   setSelectedEmojis: (emojis) => set({ selectedEmojis: emojis }),
   setFlippedCards: (cards) => set({ flippedCards: cards }),
   setMatchedCards: (cards) => set({ matchedCards: cards }),

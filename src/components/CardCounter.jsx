@@ -1,27 +1,26 @@
 // src/components/CardCounter.jsx
 
-import { useCardCounterStore } from "../stores/index.jsx";
+import { useGameStore } from "../stores/index.jsx";
 
 export function CardCounter() {
-  const { numberOfCards, availableNumbers, setNumberOfCards } =
-    useCardCounterStore;
+  const { numberOfCards, setSelectedNumber } = useGameStore();
 
   const handleChange = (e) => {
     const value = Number(e.target.value);
-    setNumberOfCards(value);
+    setSelectedNumber(value);
   };
 
   return (
     <div>
-      <p>Number of cards: {numberOfCards}</p>
-      <select value={numberOfCards} onChange={handleChange}>
-        {availableNumbers &&
-          availableNumbers.map((number) => (
-            <option key={number.value} value={number.value}>
-              {number.label || number.value}
-            </option>
-          ))}
-      </select>
+      <label htmlFor="cardNumber">Number of cards: </label>
+      <input
+        id="cardNumber"
+        type="number"
+        value={numberOfCards}
+        onChange={handleChange}
+        min="2"
+        step="2"
+      />
     </div>
   );
 }
