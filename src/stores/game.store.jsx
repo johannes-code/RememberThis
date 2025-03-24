@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { data } from "../data/data";
 import { emojiArrays } from "../data/emojiArray";
 import { shuffleArray } from "../utils/ShuffleArray";
+import { useCategoryStore } from "./index";
 
 const useGameStore = create((set, get) => ({
   // Initial State

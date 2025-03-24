@@ -8,20 +8,21 @@ export function CategorySelector() {
 
   return (
     <div>
-      {Object.keys(categories).map((category) => (
+      {categories.map((category) => (
         <RegularButton
-          key={category}
-          onClick={() => selectCategory(category)}
-          className={currentCategory === category ? "active" : ""}
+          key={category.value}
+          onClick={() => selectCategory(category.value)}
+          className={currentCategory === category.value ? "active" : ""}
         >
-          {category}
+          {category.name}
         </RegularButton>
       ))}
       <RegularButton
         onClick={() => selectCategory(null)}
         className={currentCategory === null ? "active" : ""}
+        aria-label="Select random category"
       >
-        Random
+        Random Category
       </RegularButton>
     </div>
   );
