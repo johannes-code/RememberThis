@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { data } from "../data/data";
 import { emojiArrays } from "../data/emojiArray";
-import { shuffleArray } from "../utils/ShuffleArray"; // Import shuffleArray
+import { shuffleArray } from "../utils/ShuffleArray";
 
 const useGameStore = create((set, get) => ({
   // Initial State
@@ -10,7 +10,7 @@ const useGameStore = create((set, get) => ({
   emojiArrays: emojiArrays,
   currentCategory: null,
   selectedNumber: "10",
-  numberOfCards: 10, // Default number of cards
+  numberOfCards: 10,
   selectedEmojis: [],
   flippedCards: [],
   matchedCards: [],
@@ -29,7 +29,11 @@ const useGameStore = create((set, get) => ({
   },
 
   setCurrentCategory: (category) => set({ currentCategory: category }),
-  setSelectedNumber: (number) => set({ selectedNumber: number }),
+  setSelectedNumber: (number) =>
+    set({
+      selectedNumber: number,
+      numberOfCards: parseInt(number, 10),
+    }),
   setSelectedEmojis: (emojis) => set({ selectedEmojis: emojis }),
   setFlippedCards: (cards) => set({ flippedCards: cards }),
   setMatchedCards: (cards) => set({ matchedCards: cards }),
@@ -79,6 +83,17 @@ const useGameStore = create((set, get) => ({
     );
 
     set({ selectedEmojis: gameEmojis });
+    get().startCounting(); // Start the timer when the game starts
+  },
+
+  checkWinCondition: () => {
+    const { matchedCards, numberOfCards, stopCounting } = get();
+    if (matchedCards.length === numberOfCards) {
+      set({ hasGameEnded: true, isGameOn: false });
+      stopCounting();
+      console.log("Game Won!");
+      // You can add more end-game logic here if needed
+    }
   },
 
   flipCard: (index) => {
@@ -104,11 +119,34 @@ const useGameStore = create((set, get) => ({
             matchedCards: [...state.matchedCards, first, second],
             flippedCards: [],
           }));
+          get().checkWinCondition(); // Check for win after successful match
         } else {
           set({ flippedCards: [] });
         }
       }, 1000);
     }
+  },
+
+  endGame: () => {
+    set({ hasGameEnded: true, isGameOn: false });
+    get().stopCounting();
+    // Additional end-game logic can be added here
+  },
+
+  resetGame: () => {
+    set({
+      currentCategory: null,
+      selectedNumber: "10",
+      numberOfCards: 10,
+      selectedEmojis: [],
+      flippedCards: [],
+      matchedCards: [],
+      hasGameEnded: false,
+      isGameOn: false,
+      finalTime: null,
+      count: 0,
+      isCountingActive: false,
+    });
   },
 }));
 
