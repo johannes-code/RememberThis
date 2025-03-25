@@ -1,8 +1,10 @@
-/** @type {import('next').NextConfig} */
+import path from "path";
 
-const nextConfig = {
-    output: 'export', //Outputs SPA
-    distDir: './dist', //Output dir = './dist'
-}
+const nextConfig = (module.exports = {
+  webpack: (config) => {
+    config.resolve.alias["@"] = path.resolve(__dirname);
+    return config;
+  },
+});
 
-export default nextConfig
+export default nextConfig;
