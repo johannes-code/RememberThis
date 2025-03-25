@@ -1,5 +1,7 @@
-export function ScoreBoard({ count, time }) {
-  const timestamp = new Date().toISOString();
+import { useScoreStore } from "../stores/index.jsx";
+
+export function ScoreBoard() {
+  const { count, time, timestamp } = useScoreStore;
   //Best Month/ Week / Day
 
   // Name
@@ -12,7 +14,7 @@ export function ScoreBoard({ count, time }) {
     <div>
       <p>Number of clicks{count}</p>
       <p>Time taken: {time} seconds</p>
-      <p>Score set on: {timestamp}</p>
+      {timestamp && <p>Score set on: {timestamp}</p>}
     </div>
   );
 }
