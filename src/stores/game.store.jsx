@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { emojiArrays } from "../data/emojiArray";
 import { shuffleArray } from "../utils/ShuffleArray";
-import useCategoryStore from "./category.store";
+import { useCategoryStore, useHighscoreStore, useTimerStore } from "./index";
 
 const useGameStore = create((set, get) => ({
   // Game state
@@ -17,7 +17,8 @@ const useGameStore = create((set, get) => ({
   // Actions
   setSelectedNumber: (number) => {
     const adjustedNumber = Math.max(2, parseInt(number, 10)); // Ensure minimum is 2
-    const evenNumber = adjustedNumber % 2 === 0 ? adjustedNumber : adjustedNumber + 1; // Ensure it's even
+    const evenNumber =
+      adjustedNumber % 2 === 0 ? adjustedNumber : adjustedNumber + 1; // Ensure it's even
     set({
       numberOfCards: evenNumber,
     });
@@ -25,15 +26,19 @@ const useGameStore = create((set, get) => ({
   },
 
   startGame: () => {
+    useTimerStore.getState().resetTimer();
+    useTimerStore.getState().startTimer();
+    get().setupGame();
+    get().startCounting();
+
     set({
       hasGameEnded: false,
       isGameOn: true,
       flippedCards: [],
       matchedCards: [],
       count: 0,
+      startTime: Date.now(),
     });
-    get().setupGame();
-    get().startCounting();
   },
 
   setupGame: () => {
@@ -44,14 +49,14 @@ const useGameStore = create((set, get) => ({
     if (!currentCategory) {
       const allCategories = Object.keys(emojiArrays);
       const randomCategories = shuffleArray(allCategories).slice(0, 3);
-      selectedArray = randomCategories.flatMap(cat => emojiArrays[cat]);
+      selectedArray = randomCategories.flatMap((cat) => emojiArrays[cat]);
     } else {
       selectedArray = emojiArrays[currentCategory];
     }
 
     const baseEmojis = shuffleArray(selectedArray).slice(0, numberOfCards / 2);
     const gameEmojis = shuffleArray([...baseEmojis, ...baseEmojis]);
-    
+
     set({ selectedEmojis: gameEmojis });
   },
 
@@ -60,17 +65,26 @@ const useGameStore = create((set, get) => ({
   stopCounting: () => set({ isCountingActive: false }),
   incrementCount: () => {
     if (get().isCountingActive) {
-      set(state => ({ count: state.count + 1 }));
+      set((state) => ({ count: state.count + 1 }));
     }
   },
 
   // Game logic
   flipCard: (index) => {
-    const { flippedCards, selectedEmojis, matchedCards } = get();
+    const { flippedCards, selectedEmojis, matchedCards, isCountingActive } =
+      get();
 
-    if (flippedCards.length === 2 || 
-        flippedCards.includes(index) || 
-        matchedCards.includes(index)) return;
+    if (
+      flippedCards.length === 2 ||
+      flippedCards.includes(index) ||
+      matchedCards.includes(index)
+    )
+      return;
+
+    // Increment the count when a card is flipped
+    if (isCountingActive) {
+      set((state) => ({ count: state.count + 1 }));
+    }
 
     const newFlipped = [...flippedCards, index];
     set({ flippedCards: newFlipped });
@@ -79,9 +93,9 @@ const useGameStore = create((set, get) => ({
       setTimeout(() => {
         const [first, second] = newFlipped;
         if (selectedEmojis[first] === selectedEmojis[second]) {
-          set(state => ({
+          set((state) => ({
             matchedCards: [...state.matchedCards, first, second],
-            flippedCards: []
+            flippedCards: [],
           }));
           get().checkWinCondition();
         } else {
@@ -92,15 +106,42 @@ const useGameStore = create((set, get) => ({
   },
 
   checkWinCondition: () => {
-    const { matchedCards, numberOfCards } = get();
+    const { matchedCards, numberOfCards, count } = get();
+
     if (matchedCards.length === numberOfCards) {
+      useTimerStore.getState().stopTimer();
+
       set({ hasGameEnded: true, isGameOn: false });
       get().stopCounting();
+
+      const elapsedTime = useTimerStore.getState().timer / 1000;
+      const isPerfectGame = count === numberOfCards;
+      const highscoreStore = useHighscoreStore.getState();
+      const score = highscoreStore.calculateHighScore({
+        clicks: count,
+        time: elapsedTime,
+        cardCount: numberOfCards,
+        isPerfectGame,
+      });
+
+      highscoreStore.saveHighscore({
+        score,
+        clicks: count,
+        time: elapsedTime,
+        cardCount: numberOfCards,
+        isPerfectGame,
+        timestamp: new Date().toISOString(),
+      });
     }
+  },
+  getGameTime: () => {
+    return Math.floor((Date.now() - get().startTime) / 1000);
   },
 
   // Reset functionality
   resetGame: () => {
+    const resetTimer = useTimerStore.getState().resetTimer;
+
     set({
       selectedEmojis: [],
       flippedCards: [],
@@ -112,7 +153,8 @@ const useGameStore = create((set, get) => ({
       numberOfCards: 10, // Reset to default number of cards
     });
     useCategoryStore.getState().selectCategory(null);
-  }
+    resetTimer();
+  },
 }));
 
 export default useGameStore;
