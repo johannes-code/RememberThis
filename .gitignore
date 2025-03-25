@@ -24,3 +24,7 @@ dist-ssr
 *.sw?
 
 .vercel
+.env
+.next
+next-env.d.ts
+

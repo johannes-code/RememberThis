@@ -2,11 +2,11 @@ export const data = {
   category: [
     {
       name: "Smily",
-      value: "smilies",
+      value: "smily",
     },
     {
       name: "Animals",
-      value: "animals",
+      value: "animal",
     },
     {
       name: "Food",
@@ -14,15 +14,15 @@ export const data = {
     },
     {
       name: "Activity",
-      value: "activities",
+      value: "activity",
     },
     {
       name: "Symbols",
-      value: "symbols",
+      value: "symbol",
     },
     {
       name: "Objects",
-      value: "objects",
+      value: "object",
     },
   ],
 
