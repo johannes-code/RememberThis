@@ -25,8 +25,8 @@ const useTimerStore = create((set, get) => ({
     set({ timer: 0, isRunning: false, intervalId: null });
   },
 
-  formatTime: () => {
-    const timer = get().timer;
+  formatTime: (inputTime) => {
+    const timer = inputTime ?? get().timer;
     const hours = Math.floor(timer / 3600000)
       .toString()
       .padStart(2, "0");
