@@ -18,11 +18,11 @@ export const data = {
     },
     {
       name: "Symbols",
-      value: "symbols",
+      value: "symbol",
     },
     {
       name: "Objects",
-      value: "objects",
+      value: "object",
     },
   ],
 

@@ -109,15 +109,14 @@ const useGameStore = create((set, get) => ({
     const { matchedCards, numberOfCards, count } = get();
 
     if (matchedCards.length === numberOfCards) {
-      useTimerStore.getState().stopTimer();
-
       set({ hasGameEnded: true, isGameOn: false });
       get().stopCounting();
+      useTimerStore.getState().stopTimer();
 
       const elapsedTime = useTimerStore.getState().timer / 1000;
       const isPerfectGame = count === numberOfCards;
       const highscoreStore = useHighscoreStore.getState();
-      const score = highscoreStore.calculateHighScore({
+      const score = highscoreStore.calculateHighscore({
         clicks: count,
         time: elapsedTime,
         cardCount: numberOfCards,

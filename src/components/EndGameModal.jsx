@@ -17,7 +17,6 @@ export function EndGameModal() {
     <div className="modal">
       <h2>Congratulations!</h2>
       <p>You finished the game!</p>
-      <p>Clicks: {clicks}</p>
       <p>Time: {finalTime}</p>
     </div>
   );
