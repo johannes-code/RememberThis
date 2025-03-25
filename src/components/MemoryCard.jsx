@@ -1,10 +1,8 @@
-// src/components/MemoryCard.jsx
-
 export default function MemoryCard({
   emojis,
   flippedCards,
   matchedCards,
-  onCardClick,
+  handleClick,
 }) {
   return (
     <ul className="card-container">
@@ -19,7 +17,7 @@ export default function MemoryCard({
         >
           <button
             className="btn btn--emoji"
-            onClick={() => onCardClick(index)}
+            onClick={() => handleClick(index)}
             disabled={
               flippedCards.includes(index) || matchedCards.includes(index)
             }
