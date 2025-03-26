@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { connectToDatabase } from "@/lib/mongod.mjs";
+import { connectToDatabase } from "../../../../lib/mongodb.mjs";
 
 export async function GET() {
   try {
