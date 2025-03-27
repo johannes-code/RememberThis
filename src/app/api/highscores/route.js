@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
-import { connectToDatabase } from "../../../../lib/mongodb.mjs";
+import { connectToDatabase } from "../../lib/mongodb.mjs";
 
-console.log("connected to database", connectToDatabase);
 const COLLECTION_NAME = "scores";
 
 export async function GET(request) {
@@ -19,8 +18,6 @@ export async function GET(request) {
       .skip(skip)
       .limit(limit)
       .toArray();
-
-    console.log(request.url);
 
     const total = await db.collection(COLLECTION_NAME).countDocuments();
 
