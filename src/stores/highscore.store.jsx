@@ -34,8 +34,9 @@ const useHighscoreStore = create((set) => ({
   // Fetch Highscores
   fetchHighscores: async () => {
     try {
-      const response = await fetch("/api/highscores");
+      const response = await fetch("../app/api/highscores/route.js");
       const data = await response.json();
+      console.log("response.json:", response.json);
       set({ highscores: data });
     } catch (error) {
       console.error("Error fetching highscores:", error);
@@ -45,11 +46,12 @@ const useHighscoreStore = create((set) => ({
   // Save Highscore
   saveHighscore: async (newScore) => {
     try {
-      await fetch("/api/highscores", {
+      await fetch("../app/api/highscores/route.js", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newScore),
       });
+      console.log("fetched highscore:", newScore);
       set((state) => ({ highscores: [...state.highscores, newScore] }));
     } catch (error) {
       console.error("Error saving highscore:", error);

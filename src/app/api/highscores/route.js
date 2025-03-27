@@ -70,6 +70,8 @@ export async function POST(request) {
       timestamp: new Date(),
     };
 
+    console.log("new highscore:", newHighscore);
+
     const result = await db
       ?.collection(COLLECTION_NAME)
       .insertOne(newHighscore);
