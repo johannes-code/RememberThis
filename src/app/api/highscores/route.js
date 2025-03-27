@@ -5,10 +5,11 @@ const COLLECTION_NAME = "scores";
 
 export async function GET(request) {
   try {
+    const { searchParams } = new URL(request.url);
+
     const page = parseInt(searchParams.get("page")) || 1;
     const limit = parseInt(searchParams.get("limit")) || 30;
     const skip = (page - 1) * limit;
-    const { searchParams } = new URL(request.url);
 
     const { db } = await connectToDatabase();
     const highscores = await db
@@ -39,24 +40,33 @@ export async function GET(request) {
 export async function POST(request) {
   try {
     const { db } = await connectToDatabase();
-    const { playerName, score, clicks, time, cardCount } = await request.json();
+    const payload = await request.json();
 
-    if (
-      !playerName ||
-      typeof score !== "number" ||
-      typeof clicks !== "number" ||
-      typeof time !== "number" ||
-      typeof cardCount !== "number"
-    ) {
+    // More robust validation
+    if (!payload || typeof payload !== "object") {
       return NextResponse.json(
-        { error: "Missing or invalid required fields" },
+        { error: "Invalid request body" },
         { status: 400 }
       );
     }
 
-    if (score < 0 || clicks < 0 || time < 0 || cardCount < 0) {
+    const { playerName, score, clicks, time, cardCount } = payload;
+
+    const validationErrors = [];
+    if (!playerName || typeof playerName !== "string")
+      validationErrors.push("Invalid playerName");
+    if (typeof score !== "number" || score < 0)
+      validationErrors.push("Invalid score");
+    if (typeof clicks !== "number" || clicks < 0)
+      validationErrors.push("Invalid clicks");
+    if (typeof time !== "number" || time < 0)
+      validationErrors.push("Invalid time");
+    if (typeof cardCount !== "number" || cardCount < 0)
+      validationErrors.push("Invalid cardCount");
+
+    if (validationErrors.length > 0) {
       return NextResponse.json(
-        { error: "Score, clicks, time, and cardCount must be non-negative" },
+        { error: "Validation failed", details: validationErrors },
         { status: 400 }
       );
     }
@@ -70,19 +80,22 @@ export async function POST(request) {
       timestamp: new Date(),
     };
 
-    console.log("new highscore:", newHighscore);
+    const result = await db.collection(COLLECTION_NAME).insertOne(newHighscore);
 
-    const result = await db
-      ?.collection(COLLECTION_NAME)
-      .insertOne(newHighscore);
     return NextResponse.json(
-      { ...newHighscore, _id: result.insertedId },
+      {
+        success: true,
+        data: { ...newHighscore, _id: result.insertedId },
+      },
       { status: 201 }
     );
   } catch (error) {
     console.error("Error saving highscore:", error);
     return NextResponse.json(
-      { error: "Failed to save highscore", details: error.message },
+      {
+        error: "Failed to save highscore",
+        details: process.env.NODE_ENV === "development" ? error.message : null,
+      },
       { status: 500 }
     );
   }
