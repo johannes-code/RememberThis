@@ -16,22 +16,30 @@ export default function App() {
   const { highscores, fetchHighscores } = useHighscoreStore();
   const { isGameOn, hasGameEnded, count, startGame } =
     useGameStore();
-  const { isLoading, setIsLoading} = useState(true);
+  const { setIsLoading} = useState(true);
   
 
   useEffect(() => {
+    let isMounted = true;
     const loadHighscores = async () => {
-      setIsLoading(true);
-      await fetchHighscores();
-      setIsLoading(false);
-  };
-
-  loadHighscores();
+      try {
+        setIsLoading(true);
+        await fetchHighscores();
+        if (isMounted) setIsLoading(false);
+      } catch (error) {
+        if (isMounted) {
+          console.error("Loading failed:", error);
+          setIsLoading(false);  // Add this line
+        }
+      }
+    };
+  
+    loadHighscores();
+    return () => { isMounted = false };
   }, [fetchHighscores]);
+  
 
-  if (isLoading) {
-    return <div>Loading highscores...</div>
-  }
+
   return (
     <main>
       <h1>Memory Game</h1>
