@@ -34,7 +34,7 @@ const useHighscoreStore = create((set) => ({
       const data = await response.json();
       set({ highscores: Array.isArray(data) ? data : [] });
     } catch (error) {
-      console.error("Error saving highscore", error);
+      console.error("Error fetching highscores", error);
       set({ highscores: [] });
     }
   },
@@ -56,18 +56,21 @@ const useHighscoreStore = create((set) => ({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(scoreToSave),
       });
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || "Failed to save highscore");
       }
+
       const savedScore = await response.json();
 
-      set((state) => {
-        const currentScores = Array.isArray(state.highscores)
-          ? state.highscores
-          : [];
-        return { highscores: [...currentScores, newScore] };
-      });
+      // Update local state with the server response
+      set((state) => ({
+        highscores: [...(state.highscores || []), savedScore]
+          .sort((a, b) => b.score - a.score)
+          .slice(0, 30),
+      }));
+
       return savedScore;
     } catch (error) {
       console.error("Error saving highscore:", error);
