@@ -29,9 +29,14 @@ const useHighscoreStore = create((set) => ({
     }),
 
   fetchHighscores: async () => {
+    console.log("Attempting to fetch highscores...");
     try {
       const response = await fetch("/api/highscores");
+      console.log("Response status:", response.status);
+
       const data = await response.json();
+      console.log("Recieved data:", data);
+
       set({ highscores: Array.isArray(data) ? data : [] });
     } catch (error) {
       console.error("Error fetching highscores", error);

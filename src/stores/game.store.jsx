@@ -128,6 +128,7 @@ const useGameStore = create((set, get) => ({
 
       set({
         showNameInput: true,
+        isGameOn: false,
         pendingHighScore: {
           score,
           clicks: count,
@@ -137,13 +138,20 @@ const useGameStore = create((set, get) => ({
           timestamp: new Date().toISOString(),
         },
       });
+      get().stopCounting();
+      useTimerStore.getState().stopTimer();
     }
   },
 
   setPlayerName: (name) => set({ playerName: name }),
   savePlayerScore: () => {
     const { pendingHighScore, playerName } = get();
-    if (!pendingHighScore) return;
+    console.log("Attempting to save:", { pendingHighScore, playerName });
+
+    if (!pendingHighScore) {
+      console.error("No pending highscore to save! ");
+      return;
+    }
 
     useHighscoreStore.getState().saveHighscore({
       playerName: playerName || "Anonymous",

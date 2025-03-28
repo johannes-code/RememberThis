@@ -5,7 +5,7 @@ import { CategorySelector } from "./CategorySelector";
 import { GameControls } from "./GameControls";
 import { CardCounter } from "./CardCounter";
 import GameBoard from "./GameBoard";
-import { HighScoreList } from "./HighScoreList";
+import HighScoreList from "./HighScoreList";
 import { GameTimer } from "./GameTimer";
 import { EndGameModal } from "./EndGameModal";
 
@@ -13,12 +13,12 @@ import { useGameStore, useHighscoreStore } from "../stores/index.jsx";
 import NameInput from "./NameInput.jsx";
 
 export default function App() {
-  const { isGameOn, hasGameEnded, count, highscores, startGame } =
+  const { isGameOn, hasGameEnded, count, startGame, fetchHighscores } =
     useGameStore();
+  const { highscores } = useHighscoreStore();
 
-  const { fetchHighscores } = useHighscoreStore();
   useEffect(() => {
-    fetchHighscores();
+    fetchHighscores;
   }, [fetchHighscores]);
 
   return (
@@ -35,9 +35,9 @@ export default function App() {
       ) : (
         <>
           <GameBoard />
-          <HighScoreList highscores={highscores} />
         </>
       )}
+      <HighScoreList highscores={highscores} />
       <EndGameModal hasEnded={hasGameEnded} />
       <p>Clicks Counted: {count}</p>
     </main>
