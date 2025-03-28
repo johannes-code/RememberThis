@@ -1,7 +1,8 @@
 import { create } from "zustand";
 
-const useHighscoreStore = create((set) => ({
+const useHighscoreStore = create((set, get) => ({
   highscores: [],
+  sessionHighscores: [], // New state for session highscores
 
   calculateHighscore: ({ clicks, time, cardCount, isPerfectGame }) => {
     const MIN_CLICKS = cardCount;
@@ -13,20 +14,22 @@ const useHighscoreStore = create((set) => ({
     return Math.round(baseScore + perfectBonus + timeBonus);
   },
 
-  addHighscore: (newScore) =>
+  addHighscore: async (newScore) => {
+    // Save to database and update global highscores
+    await get().saveHighscore(newScore);
+    
+    // Update session highscores
     set((state) => {
       const scoreWithId = {
         ...newScore,
         id: Date.now(),
       };
-      const currentScores = Array.isArray(state.highscores)
-        ? state.highscores
-        : [];
-      const updatedScores = [...currentScores, scoreWithId]
+      const updatedSessionScores = [...state.sessionHighscores, scoreWithId]
         .sort((a, b) => b.score - a.score)
         .slice(0, 30);
-      return { highscores: updatedScores };
-    }),
+      return { sessionHighscores: updatedSessionScores };
+    });
+  },
 
   fetchHighscores: async () => {
     console.log("Attempting to fetch highscores...");
@@ -35,7 +38,7 @@ const useHighscoreStore = create((set) => ({
       console.log("Response status:", response.status);
 
       const data = await response.json();
-      console.log("Recieved data:", data);
+      console.log("Received data:", data);
 
       set({ highscores: Array.isArray(data) ? data : [] });
     } catch (error) {
