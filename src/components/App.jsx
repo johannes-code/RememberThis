@@ -13,13 +13,16 @@ import { useGameStore, useHighscoreStore } from "../stores/index.jsx";
 import NameInput from "./NameInput.jsx";
 
 export default function App() {
-  const { highscores } = useHighscoreStore();
+  const { highscores, fetchHighscores} = useHighscoreStore();
 
   useEffect(() => {
     fetchHighscores;
   }, [fetchHighscores]);
-  const { isGameOn, hasGameEnded, count, startGame, fetchHighscores } =
+  
+  const { isGameOn, hasGameEnded, count, startGame } =
     useGameStore();
+  
+  
 
   return (
     <main>
