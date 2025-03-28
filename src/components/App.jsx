@@ -20,7 +20,7 @@ export default function App() {
 
   useEffect(() => {
     fetchHighscores;
-  }, [fetchHighscores]);
+  }, []);
 
   return (
     <main>
