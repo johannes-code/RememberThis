@@ -11,6 +11,7 @@ export async function GET(request) {
     const skip = (page - 1) * limit;
 
     const { db } = await connectToDatabase();
+    console.log("db:",{db})
     const highscores = await db
       .collection(COLLECTION_NAME)
       .find({})
@@ -18,7 +19,7 @@ export async function GET(request) {
       .skip(skip)
       .limit(limit)
       .toArray();
-
+    console.log("POST highscore:", highscores)
     const total = await db.collection(COLLECTION_NAME).countDocuments();
 
     return NextResponse.json({
@@ -28,7 +29,7 @@ export async function GET(request) {
       total,
     });
   } catch (error) {
-    console.error("Error fetching highscores:", error);
+    console.error("Detailed error in GET /api/highscores:", error);
     return NextResponse.json(
       { error: "Failed to fetch highscores", details: error.message },
       { status: 500 }

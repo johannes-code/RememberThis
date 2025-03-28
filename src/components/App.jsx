@@ -19,8 +19,11 @@ export default function App() {
   const { highscores } = useHighscoreStore();
 
   useEffect(() => {
-    fetchHighscores;
+    console.log("Component mounted, fetching highscores")
+    fetchHighscores();
+    console.log(fetchHighscores)
   }, []);
+
 
   return (
     <main>
