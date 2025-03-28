@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { CategorySelector } from "./CategorySelector";
 import { GameControls } from "./GameControls";
 import { CardCounter } from "./CardCounter";
@@ -13,17 +13,25 @@ import { useGameStore, useHighscoreStore } from "../stores/index.jsx";
 import NameInput from "./NameInput.jsx";
 
 export default function App() {
-  const { highscores, fetchHighscores} = useHighscoreStore();
-
-  useEffect(() => {
-    fetchHighscores;
-  }, [fetchHighscores]);
-  
+  const { highscores, fetchHighscores } = useHighscoreStore();
   const { isGameOn, hasGameEnded, count, startGame } =
     useGameStore();
-  
+  const { isLoading, setIsLoading} = useState(true);
   
 
+  useEffect(() => {
+    const loadHighscores = async () => {
+      setIsLoading(true);
+      await fetchHighscores();
+      setIsLoading(false);
+  };
+
+  loadHighscores();
+  }, [fetchHighscores]);
+
+  if (isLoading) {
+    return <div>Loading highscores...</div>
+  }
   return (
     <main>
       <h1>Memory Game</h1>
