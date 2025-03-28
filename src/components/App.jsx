@@ -28,6 +28,7 @@ export default function App() {
       <GameTimer />
       {!isGameOn ? (
         <>
+          <HighScoreList highscores={highscores} />
           <CardCounter />
           <CategorySelector />
           <GameControls onStart={startGame} />
@@ -38,7 +39,6 @@ export default function App() {
           <GameBoard />
         </>
       )}
-      <HighScoreList highscores={highscores} />
       <EndGameModal hasEnded={hasGameEnded} />
       <p>Clicks Counted: {count}</p>
     </main>
