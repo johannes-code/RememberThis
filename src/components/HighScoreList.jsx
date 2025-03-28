@@ -5,11 +5,8 @@ export default function HighScoreList({ highscores }) {
     return <div>Loading highscores...</div>;
   }
 
-  // if (highscores.length === 0) {
-  //   return <div>No high score available yet</div>;
-  // }
 
-  console.log();
+  
   return (
     <div className="highscore-list">
       <h2>🏆 Top Scores</h2>
