@@ -17,9 +17,9 @@ export default function HighScoreList({ highscores }) {
         {highscores.map((score, index) => (
           <li key={score.id || index} className="highscore-item">
             <span className="player-name">{score.playerName}</span>
-            <span className="player-score">{score.score}</span>
+            <span className="player-score">|{score.score}</span>
             <span className="game-stats">
-              {score.time}s | {score.clicks} clicks
+              |{score.time}s | {score.clicks} clicks
             </span>
           </li>
         ))}
