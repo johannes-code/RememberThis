@@ -4,22 +4,13 @@ const useHighscoreStore = create((set) => ({
   highscores: [],
 
   calculateHighscore: ({ clicks, time, cardCount, isPerfectGame }) => {
-    const MIN_CLICKS = cardCount; // Minimum possible clicks (perfect game)
-
-    // Base formula from your code with adjustments
+    const MIN_CLICKS = cardCount;
     const baseScore =
       (1000 * (cardCount / Math.max(clicks, 1)) * (1 + cardCount / 100)) /
       Math.max(time, 1);
-
-    // Perfect game bonus (no mismatches)
     const perfectBonus = isPerfectGame ? 1000 : 0;
-
-    // Time bonus (faster = better)
     const timeBonus = 500 / Math.max(time, 1);
-
-    const finalScore = Math.round(baseScore + perfectBonus + timeBonus);
-
-    return finalScore;
+    return Math.round(baseScore + perfectBonus + timeBonus);
   },
 
   addHighscore: (newScore) =>
@@ -28,37 +19,59 @@ const useHighscoreStore = create((set) => ({
         ...newScore,
         id: Date.now(),
       };
-      const updatedScores = [...state.highscores, scoreWithId]
+      const currentScores = Array.isArray(state.highscores)
+        ? state.highscores
+        : [];
+      const updatedScores = [...currentScores, scoreWithId]
         .sort((a, b) => b.score - a.score)
-        .slice(0, 30); // Keep top 30 scores
-
+        .slice(0, 30);
       return { highscores: updatedScores };
     }),
 
-  // Fetch Highscores
   fetchHighscores: async () => {
     try {
       const response = await fetch("/api/highscores");
       const data = await response.json();
-      console.log("fetched highscores:", data);
-      set({ highscores: data });
+      set({ highscores: Array.isArray(data) ? data : [] });
     } catch (error) {
-      console.error("Error fetching highscores:", error);
+      console.error("Error saving highscore", error);
+      set({ highscores: [] });
     }
   },
 
-  // Save Highscore
   saveHighscore: async (newScore) => {
     try {
-      await fetch("/api/highscores", {
+      const scoreToSave = {
+        playerName: newScore.playerName || "Anonymous",
+        score: newScore.score,
+        time: newScore.time,
+        clicks: newScore.clicks,
+        cardCount: newScore.cardCount,
+        isPerfectGame: newScore.isPerfectGame || false,
+        date: new Date().toISOString(),
+      };
+
+      const response = await fetch("/api/highscores", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newScore),
+        body: JSON.stringify(scoreToSave),
       });
-      console.log("saved highscore:", newScore);
-      set((state) => ({ highscores: [...state.highscores, newScore] }));
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to save highscore");
+      }
+      const savedScore = await response.json();
+
+      set((state) => {
+        const currentScores = Array.isArray(state.highscores)
+          ? state.highscores
+          : [];
+        return { highscores: [...currentScores, newScore] };
+      });
+      return savedScore;
     } catch (error) {
       console.error("Error saving highscore:", error);
+      throw error;
     }
   },
 }));
