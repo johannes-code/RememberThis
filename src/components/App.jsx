@@ -10,6 +10,7 @@ import { GameTimer } from "./GameTimer";
 import { EndGameModal } from "./EndGameModal";
 
 import { useGameStore, useHighscoreStore } from "../stores/index.jsx";
+import NameInput from "./NameInput.jsx";
 
 export default function App() {
   const { isGameOn, hasGameEnded, count, highscores, startGame } =
@@ -29,6 +30,7 @@ export default function App() {
           <CardCounter />
           <CategorySelector />
           <GameControls onStart={startGame} />
+          <NameInput />
         </>
       ) : (
         <>

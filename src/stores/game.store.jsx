@@ -13,6 +13,9 @@ const useGameStore = create((set, get) => ({
   isGameOn: false,
   count: 0,
   isCountingActive: false,
+  showNameModal: false,
+  pendingHighScore: null,
+  playerName: "",
 
   // Actions
   setSelectedNumber: (number) => {
@@ -123,16 +126,35 @@ const useGameStore = create((set, get) => ({
         isPerfectGame,
       });
 
-      highscoreStore.saveHighscore({
-        score,
-        clicks: count,
-        time: elapsedTime,
-        cardCount: numberOfCards,
-        isPerfectGame,
-        timestamp: new Date().toISOString(),
+      set({
+        showNameInput: true,
+        pendingHighScore: {
+          score,
+          clicks: count,
+          time: elapsedTime,
+          cardCount: numberOfCards,
+          isPerfectGame,
+          timestamp: new Date().toISOString(),
+        },
       });
     }
   },
+
+  setPlayerName: (name) => set({ playerName: name }),
+  savePlayerScore: () => {
+    const { pendingHighScore, playerName } = get();
+    if (!pendingHighScore) return;
+
+    useHighscoreStore.getState().saveHighscore({
+      playerName: playerName || "Anonymous",
+      ...pendingHighScore,
+      date: new Date().toDateString(),
+    });
+
+    set({ showNameInput: false, pendingHighscore: null, playerName: "" });
+  },
+  cancelScoreSave: () => set({ showNameInput: false, pendingHighScore: null }),
+
   getGameTime: () => {
     return Math.floor((Date.now() - get().startTime) / 1000);
   },
