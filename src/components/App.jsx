@@ -15,7 +15,7 @@ import NameInput from "./NameInput.jsx";
 export default function App() {
   const { isGameOn, hasGameEnded, count, startGame } =
     useGameStore();
-  const fetchHighscores = useHighscoreStore(state => state.fetchHighscores);
+  const {fetchHighscores} = useHighscoreStore(state => state.fetchHighscores);
   const { highscores } = useHighscoreStore();
 
   useEffect(() => {
@@ -28,7 +28,6 @@ export default function App() {
       <GameTimer />
       {!isGameOn ? (
         <>
-          <HighScoreList highscores={highscores} />
           <CardCounter />
           <CategorySelector />
           <GameControls onStart={startGame} />
@@ -39,8 +38,9 @@ export default function App() {
           <GameBoard />
         </>
       )}
-      <EndGameModal hasEnded={hasGameEnded} />
       <p>Clicks Counted: {count}</p>
+      <EndGameModal hasEnded={hasGameEnded} />
+      <HighScoreList highscores={highscores} />
     </main>
   );
 }
