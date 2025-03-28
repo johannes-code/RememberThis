@@ -13,13 +13,13 @@ export default function NameInput() {
 
   if (!showNameInput) return null;
 
-  const handleSave = () => {
-    if (!playerName.trim()) {
-      alert("Please enter your name: ");
-      return;
-    }
-    savePlayerScore();
-  };
+  // const handleSave = () => {
+  //   if (!playerName.trim()) {
+  //     alert("Please enter your name: ");
+  //     return;
+  //   }
+  //   savePlayerScore();
+  // };
 
   console.log("Rendering NameInput", {
     showNameInput,
