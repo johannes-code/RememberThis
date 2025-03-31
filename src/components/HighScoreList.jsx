@@ -1,27 +1,26 @@
-import { useHighscoreStore } from "../stores/index.jsx";
+"use client";
 
-export function HighScoreList() {
-  const { highscores } = useHighscoreStore();
+export default function HighScoreList({ highscores }) {
+  if (!highscores) {
+    return <div>Loading highscores...</div>;
+  }
 
+
+  
   return (
     <div className="highscore-list">
       <h2>🏆 Top Scores</h2>
-      {highscores.map((score, index) => (
-        <div key={score.id} className="score-entry">
-          <div className="rank-badge">#{index + 1}</div>
-          <div className="score-details">
-            <p>Score: {score.score}</p>
-            <p>
-              Cards: {score.cardCount} | Time: {score.time}s | Clicks:{" "}
-              {score.clicks}
-            </p>
-            <p className="score-date">
-              {new Date(score.timestamp).toLocaleDateString()}
-              {score.isPerfect && " 🌟 Perfect Game!"}
-            </p>
-          </div>
-        </div>
-      ))}
+      <ol className="highscores-list">
+        {highscores.map((score, index) => (
+          <li key={score.id || index} className="highscore-item">
+            <span className="player-name">{score.playerName}</span>
+            <span className="player-score">|{score.score}</span>
+            <span className="game-stats">
+              |{score.time}s | {score.clicks} clicks
+            </span>
+          </li>
+        ))}
+      </ol>
     </div>
   );
 }

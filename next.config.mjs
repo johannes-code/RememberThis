@@ -1,8 +1,6 @@
-/** @type {import('next').NextConfig} */
-
-const nextConfig = {
-    output: 'export', //Outputs SPA
-    distDir: './dist', //Output dir = './dist'
-}
-
-export default nextConfig
+export default {
+  env: {
+    MONGODB_URI: process.env.MONGODB_URI,
+    MONGODB_DB: process.env.MONGODB_DB,
+  },
+};
