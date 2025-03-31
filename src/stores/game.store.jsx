@@ -25,7 +25,6 @@ const useGameStore = create((set, get) => ({
     set({
       numberOfCards: evenNumber,
     });
-    console.log("Number of cards updated:", evenNumber);
   },
 
   startGame: () => {
@@ -146,7 +145,6 @@ const useGameStore = create((set, get) => ({
   setPlayerName: (name) => set({ playerName: name }),
   savePlayerScore: () => {
     const { pendingHighScore, playerName } = get();
-    console.log("Attempting to save:", { pendingHighScore, playerName });
 
     if (!pendingHighScore) {
       console.error("No pending highscore to save! ");

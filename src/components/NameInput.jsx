@@ -13,20 +13,6 @@ export default function NameInput() {
 
   if (!showNameInput) return null;
 
-  // const handleSave = () => {
-  //   if (!playerName.trim()) {
-  //     alert("Please enter your name: ");
-  //     return;
-  //   }
-  //   savePlayerScore();
-  // };
-
-  console.log("Rendering NameInput", {
-    showNameInput,
-    pendingHighscore,
-    playerName,
-  });
-
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white p-6 rounded-lg max-w-md w-full mx-4">
